@@ -12,6 +12,18 @@ export class DiscordNotificationService extends NotifierBase<DiscordNotification
     super(ctx, config);
   }
 
+  /**
+   * HTMLタグを除去してプレーンテキストにする
+   */
+  private cleanHtmlTags(content: string): string {
+    // <plain>タグとその他のHTMLタグを除去
+    return content
+      .replace(/<plain>/g, '')
+      .replace(/<\/plain>/g, '')
+      .replace(/<[^>]*>/g, '') // その他のHTMLタグも除去
+      .trim();
+  }
+
   override async send(payload: DiscordNotificationPayload): Promise<void> {
     const { webhookUrl, username, avatarUrl } = this.config.config;
 
@@ -19,12 +31,15 @@ export class DiscordNotificationService extends NotifierBase<DiscordNotification
       this.ctx.var.logger.info("payload: ", JSON.stringify(payload));
     }
 
+    // HTMLタグを除去してクリーンなテキストにする
+    const cleanContent = this.cleanHtmlTags(payload.content);
+
     const discordPayload: {
       content: string;
       username?: string;
       avatar_url?: string;
     } = {
-      content: payload.content,
+      content: cleanContent,
     };
 
     if (username) {
