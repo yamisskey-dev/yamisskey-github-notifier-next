@@ -161,6 +161,16 @@ function resolveSources(
 export type IntermediateDestinationConfigType = RecursivePartial<
   Omit<DestinationConfigItem<unknown>, "id" | "type"> & {
     type?: string;
+    config?: {
+      // Misskey config
+      url?: string;
+      token?: string;
+      defaultPostVisibility?: string;
+      // Discord config
+      webhookUrl?: string;
+      username?: string;
+      avatarUrl?: string;
+    };
   }
 >;
 
@@ -232,6 +242,18 @@ function parseDestinationsFromEnv(c: Record<string, unknown>): Record<string, In
             current.config.defaultPostVisibility = c[key]?.toString();
             break;
           }
+          case configPath === "webhook_url": {
+            current.config.webhookUrl = c[key]?.toString();
+            break;
+          }
+          case configPath === "username": {
+            current.config.username = c[key]?.toString();
+            break;
+          }
+          case configPath === "avatar_url": {
+            current.config.avatarUrl = c[key]?.toString();
+            break;
+          }
           default: {
             break;
           }
@@ -252,7 +274,7 @@ function resolveDestinations(
 
   function mergeItems(items: Record<string, IntermediateDestinationConfigType>) {
     for (const [key, value] of Object.entries(items)) {
-      if (value.type === "misskey" || merged[key]?.type === "misskey") {
+      if (value.type === "misskey" || value.type === "discord" || merged[key]?.type === "misskey" || merged[key]?.type === "discord") {
         merged[key] = cyclicMerge(merged[key] ?? {}, value);
       }
     }
@@ -279,10 +301,30 @@ function resolveDestinations(
     };
   }
 
+  function resolveDiscord(key: string, value: IntermediateDestinationConfigType): DestinationConfigItem<unknown> {
+    return {
+      id: key,
+      type: "discord",
+      enabled: value.enabled ?? false,
+      options: {
+        debug: {
+          printPayload: value.options?.debug?.printPayload ?? false,
+        },
+      },
+      config: {
+        webhookUrl: require(value.config?.webhookUrl, `webhookUrl is required for destination ${key}`),
+        username: value.config?.username,
+        avatarUrl: value.config?.avatarUrl,
+      },
+    };
+  }
+
   const validated: Record<string, DestinationConfigItem<unknown>> = {};
   for (const [key, value] of Object.entries(merged)) {
     if (value.type === "misskey") {
       validated[key] = resolveMisskey(key, value);
+    } else if (value.type === "discord") {
+      validated[key] = resolveDiscord(key, value);
     }
   }
 
