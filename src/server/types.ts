@@ -65,7 +65,7 @@ export type SourceConfigItem<T extends SourceConfigType> = {
 /**
  * 通知先設定を表す型
  */
-export type DestinationConfigType = "misskey" | unknown;
+export type DestinationConfigType = "misskey" | "discord" | unknown;
 
 /**
  * 通知先の設定情報を表す型
@@ -102,30 +102,57 @@ export type DestinationConfigItem<T extends DestinationConfigType> = {
       printPayload?: boolean;
     };
   };
-} & {
-  /**
-   * Misskey通知先固有の設定
-   */
-  type: "misskey";
-  config: {
-    /**
-     * MisskeyサーバーのURL.
-     * e.g. https://misskey.example.com/
-     */
-    url: string;
+} & (
+  | {
+      /**
+       * Misskey通知先固有の設定
+       */
+      type: "misskey";
+      config: {
+        /**
+         * MisskeyサーバーのURL.
+         * e.g. https://misskey.example.com/
+         */
+        url: string;
 
-    /**
-     * {@link url}で指定したMisskeyサーバーのアカウントで発行したアクセストークン.
-     */
-    token: string;
+        /**
+         * {@link url}で指定したMisskeyサーバーのアカウントで発行したアクセストークン.
+         */
+        token: string;
 
-    /**
-     * 投稿公開範囲
-     * デフォルトは"home"
-     */
-    defaultPostVisibility: MisskeyPostVisibility;
-  };
-};
+        /**
+         * 投稿公開範囲
+         * デフォルトは"home"
+         */
+        defaultPostVisibility: MisskeyPostVisibility;
+      };
+    }
+  | {
+      /**
+       * Discord通知先固有の設定
+       */
+      type: "discord";
+      config: {
+        /**
+         * DiscordのWebhook URL
+         * Discord チャンネル設定で生成されたWebhook URL
+         */
+        webhookUrl: string;
+
+        /**
+         * Webhook投稿時に使用するユーザー名（オプション）
+         * 指定しない場合はDiscordのWebhook設定で指定された名前が使用される
+         */
+        username?: string;
+
+        /**
+         * Webhook投稿時に使用するアバター画像URL（オプション）
+         * 指定しない場合はDiscordのWebhook設定で指定された画像が使用される
+         */
+        avatarUrl?: string;
+      };
+    }
+);
 
 /**
  * アプリケーション設定

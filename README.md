@@ -1,10 +1,10 @@
-# Misskey GitHub Notifier Next
+# GitHub Notifier Next
 
-A service that forwards GitHub webhook events to Misskey as notes. This allows you to receive notifications about repository activities directly on your Misskey timeline.
+A service that forwards GitHub webhook events to Misskey and Discord. This allows you to receive notifications about repository activities directly on your Misskey timeline or Discord channels.
 
 ## Features
 
-- Forwards various GitHub webhook events to Misskey
+- Forwards various GitHub webhook events to Misskey and Discord
 - Supports multiple event types:
   - Repository events (push, star, fork)
   - Issue events (open, close, reopen, comment)
@@ -54,6 +54,17 @@ The service can be configured using either environment variables or the wrangler
 | `ENV_DESTINATION_<ID>_CONFIG_DEFAULT_POST_VISIBILITY` | Default visibility for posts (`public`, `home`, `followers`, or `specified`) | `home` | No |
 | `ENV_DESTINATION_<ID>_OPTIONS_DEBUG_PRINT_PAYLOAD` | Print API request payloads for debugging | `false` | No |
 
+### Destination Configuration (Discord)
+
+| Environment Variable | Description | Default | Required |
+|----------------------|-------------|---------|----------|
+| `ENV_DESTINATION_<ID>_TYPE` | Type of destination (must be `discord`) | - | Yes |
+| `ENV_DESTINATION_<ID>_ENABLED` | Enable/disable this destination | `false` | No |
+| `ENV_DESTINATION_<ID>_CONFIG_WEBHOOK_URL` | Discord webhook URL | - | Yes |
+| `ENV_DESTINATION_<ID>_CONFIG_USERNAME` | Username for Discord webhook messages | - | No |
+| `ENV_DESTINATION_<ID>_CONFIG_AVATAR_URL` | Avatar URL for Discord webhook messages | - | No |
+| `ENV_DESTINATION_<ID>_OPTIONS_DEBUG_PRINT_PAYLOAD` | Print API request payloads for debugging | `false` | No |
+
 ### Server Configuration
 
 | Environment Variable | Description | Default | Required |
@@ -88,16 +99,33 @@ ENV_DESTINATION_mymisskey_CONFIG_TOKEN=your-misskey-api-token
 ENV_DESTINATION_mymisskey_CONFIG_DEFAULT_POST_VISIBILITY=home
 ```
 
+#### Single Source with Discord Destination
+
+```
+# Source configuration (GitHub repository "my-repo")
+ENV_SOURCE_myrepo_TYPE=github-webhook
+ENV_SOURCE_myrepo_ENABLED=true
+ENV_SOURCE_myrepo_NOTIFY_TO=mydiscord
+ENV_SOURCE_myrepo_CONFIG_WEBHOOK_SECRET=your-github-webhook-secret
+
+# Destination configuration (Discord webhook)
+ENV_DESTINATION_mydiscord_TYPE=discord
+ENV_DESTINATION_mydiscord_ENABLED=true
+ENV_DESTINATION_mydiscord_CONFIG_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN
+ENV_DESTINATION_mydiscord_CONFIG_USERNAME=GitHub Notifier
+ENV_DESTINATION_mydiscord_CONFIG_AVATAR_URL=https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+```
+
 In this example, GitHub webhook events from "my-repo" will be sent to the Misskey instance at https://misskey.example.com.
 The GitHub webhook should be configured to send events to `/endpoint/myrepo`.
 
-#### Multiple Sources with Multiple Destinations
+#### Multiple Sources with Multiple Destinations (Misskey and Discord)
 
 ```
 # Source configuration (GitHub repository "repo1")
 ENV_SOURCE_repo1_TYPE=github-webhook
 ENV_SOURCE_repo1_ENABLED=true
-ENV_SOURCE_repo1_NOTIFY_TO=misskey1,misskey2
+ENV_SOURCE_repo1_NOTIFY_TO=misskey1,mydiscord
 ENV_SOURCE_repo1_CONFIG_WEBHOOK_SECRET=webhook-secret-for-repo1
 
 # Source configuration (GitHub repository "repo2")
@@ -119,10 +147,17 @@ ENV_DESTINATION_misskey2_ENABLED=true
 ENV_DESTINATION_misskey2_CONFIG_URL=https://misskey2.example.com
 ENV_DESTINATION_misskey2_CONFIG_TOKEN=token-for-misskey2
 ENV_DESTINATION_misskey2_CONFIG_DEFAULT_POST_VISIBILITY=followers
+
+# Destination configuration (Discord webhook)
+ENV_DESTINATION_mydiscord_TYPE=discord
+ENV_DESTINATION_mydiscord_ENABLED=true
+ENV_DESTINATION_mydiscord_CONFIG_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN
+ENV_DESTINATION_mydiscord_CONFIG_USERNAME=GitHub Notifier
+ENV_DESTINATION_mydiscord_CONFIG_AVATAR_URL=https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 ```
 
 In this example:
-- Events from "repo1" will be sent to both Misskey instances
+- Events from "repo1" will be sent to both a Misskey instance and Discord
 - Events from "repo2" will be sent only to the second Misskey instance
 - The GitHub webhooks should be configured to send events to `/endpoint/repo1` and `/endpoint/repo2` respectively
 

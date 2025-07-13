@@ -15,8 +15,54 @@
     // In addition to environment variables and secrets, you can also set Config values here.
     // Please refer to src/server/types.ts for the structure of the object.
     "CONFIG": {
-      "sources": {},
-      "destinations": {}
+      "sources": {
+        // GitHub Webhook設定例
+        // "my-github-webhook": {
+        //   "type": "github-webhook",
+        //   "enabled": true,
+        //   "notifyTo": ["my-misskey", "my-discord"],
+        //   "options": {
+        //     "debug": {
+        //       "printPayload": false
+        //     }
+        //   },
+        //   "config": {
+        //     "webhookSecret": "your-webhook-secret-here"
+        //   }
+        // }
+      },
+      "destinations": {
+        // Misskey通知先設定例
+        // "my-misskey": {
+        //   "type": "misskey",
+        //   "enabled": true,
+        //   "options": {
+        //     "debug": {
+        //       "printPayload": false
+        //     }
+        //   },
+        //   "config": {
+        //     "url": "https://your-misskey-instance.example.com/",
+        //     "token": "your-misskey-access-token",
+        //     "defaultPostVisibility": "home"
+        //   }
+        // },
+        // Discord Webhook通知先設定例
+        // "my-discord": {
+        //   "type": "discord",
+        //   "enabled": true,
+        //   "options": {
+        //     "debug": {
+        //       "printPayload": false
+        //     }
+        //   },
+        //   "config": {
+        //     "webhookUrl": "https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN",
+        //     "username": "GitHub Notifier",
+        //     "avatarUrl": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+        //   }
+        // }
+      }
     }
   }
 }

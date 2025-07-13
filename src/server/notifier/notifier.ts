@@ -1,3 +1,4 @@
+import { DiscordNotificationService } from "@notifier/server/notifier/impl/discord";
 import { MisskeyNotificationService } from "@notifier/server/notifier/impl/misskey";
 import type { INotifier, INotifierPayload } from "@notifier/server/notifier/types";
 import type { Config, DestinationConfigItem, ServerContext } from "@notifier/server/types";
@@ -30,6 +31,9 @@ export class Notifier implements INotifier {
     switch (config.type) {
       case "misskey": {
         return ok(new MisskeyNotificationService(ctx, config));
+      }
+      case "discord": {
+        return ok(new DiscordNotificationService(ctx, config));
       }
       default:
         return err();
