@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "yamisskey-github-notifier-next",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-12-18",
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "ENV_SOURCE_yamisskey_TYPE": "github-webhook",
+    "ENV_SOURCE_yamisskey_ENABLED": "true",
+    "ENV_SOURCE_yamisskey_NOTIFY_TO": "misskey,discord",
+    "ENV_DESTINATION_MISSKEY_TYPE": "misskey",
+    "ENV_DESTINATION_MISSKEY_ENABLED": "true",
+    "ENV_DESTINATION_MISSKEY_CONFIG_URL": "https://yami.ski/",
+    "ENV_DESTINATION_MISSKEY_CONFIG_DEFAULT_POST_VISIBILITY": "home",
+    "ENV_DESTINATION_DISCORD_TYPE": "discord",
+    "ENV_DESTINATION_DISCORD_ENABLED": "true"
+  }
+}

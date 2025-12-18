@@ -32,4 +32,4 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-wrangler.jsonc
+# wrangler.jsonc - 秘密情報は環境変数で管理するため、基本設定のみコミット可

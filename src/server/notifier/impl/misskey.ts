@@ -20,24 +20,25 @@ export class MisskeyNotificationService extends NotifierBase<MisskeyNotification
       this.ctx.var.logger.info("payload: ", JSON.stringify(payload));
     }
 
-    return fetch(`${url}api/notes/create`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        text: payload.content,
-        visibility: defaultPostVisibility,
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          this.ctx.var.logger.error(`${res.statusText}`, "error");
-        }
-      })
-      .catch((error) => {
-        this.ctx.var.logger.error(`Error sending notification: ${String(error)}`, "error");
+    try {
+      const res = await fetch(`${url}api/notes/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": "yamisskey-github-notifier/1.0",
+        },
+        body: JSON.stringify({
+          i: token,
+          text: payload.content,
+          visibility: defaultPostVisibility,
+        }),
       });
+      if (!res.ok) {
+        const body = await res.text();
+        this.ctx.var.logger.error(`Misskey API error: ${res.status} ${res.statusText} - ${body}`);
+      }
+    } catch (error) {
+      this.ctx.var.logger.error(`Error sending notification: ${String(error)}`);
+    }
   }
 }
